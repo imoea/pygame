@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+""" a TETRIS clone by Joshua Wong """
+
 from pygame.locals import *
 import copy
 import pygame

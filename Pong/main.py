@@ -299,7 +299,7 @@ class Game(object):
 		self.Display.gameOverScreen(self.P1.score, self.P2.score)
 
 
-def main():
+if __name__ == '__main__':
 	pygame.init()
 	pygame.display.set_caption('PONG')
 
@@ -307,6 +307,3 @@ def main():
 		game = Game()
 		game.run()
 
-
-if __name__ == '__main__':
-	main()
