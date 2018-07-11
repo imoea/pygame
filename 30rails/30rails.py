@@ -114,6 +114,8 @@ class Game:
         assert isinstance(tile, Tile), "{} is not a tile instance".format(tile)
 
         self._grid[y][x] = Cell(tile, edges)
+        self._curr_round += 1
+
         if self._verbose:
             print("[{}] Placing a {} at ({}, {})".format(
                   "Turn {:<2}".format(self._curr_round+1) if self._curr_round >= 0 else "Setup  ",
@@ -127,7 +129,6 @@ class Game:
                "the number of mountains is exceeded"
 
         self._set_cell(y, x, Tile.MOUNTAIN)
-        self._curr_round += 1
 
 
     def set_mine(self, y, x):
@@ -142,7 +143,6 @@ class Game:
 
         self._set_cell(y, x, Tile.MINE, [[Way(i)] for i in range(4)])
         self._mine = (y, x)
-        self._curr_round += 1
 
 
     def set_station(self, y, x, station):
@@ -163,7 +163,6 @@ class Game:
 
         self._set_cell(y, x, station, edges)
         self._station[int(station.value)] = (y, x)
-        self._curr_round += 1
 
 
     def set_bonus(self, y, x):
@@ -172,10 +171,11 @@ class Game:
         assert self._bonus is None, "the bonus already exists"
 
         self._bonus = (y, x)
+        self._curr_round += 1
+
         if self._verbose:
             print("[Setup  ] Placing a BONUS at ({}, {})".format(self._curr_round+1, y, x))
 
-        self._curr_round += 1
 
 
     def set_track(self, y, x, track, flip=False, rotate=0,
@@ -224,7 +224,6 @@ class Game:
                     edge[i] = Way((edge[i].value+rotate) % 4)
 
         self._set_cell(y, x, Tile.TRACK, tuple(map(tuple, edges)))
-        self._curr_round += 1
 
 
     def _get_bonus(self, path):
