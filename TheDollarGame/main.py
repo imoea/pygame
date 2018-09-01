@@ -46,8 +46,13 @@ class Game():
             pos[k] += np.array([BORDER, BORDER])
         self.pos = [pos[node] for node in self.nodes]  # node positions
         
-        self.money = np.zeros(n_nodes, dtype=int)  # node wealth
+        # Following the Riemann-Roch Theorem for Graphs:
+        # https://en.wikipedia.org/wiki/Riemann%E2%80%93Roch_theorem,
+        # a game is definitely winnable if the starting amount of money is
+        # at least the genus number of the graph (n_edges - n_nodes + 1).
+
         # distribute starting wealth
+        self.money = np.zeros(n_nodes, dtype=int)  # node wealth
         for _ in range(n_edges - n_nodes + 1):
             self.money[random.choice(self.nodes)] += 1
         # make random donations to set the starting game state
