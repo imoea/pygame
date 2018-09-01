@@ -49,7 +49,7 @@ class Game():
         self.money = np.zeros(n_nodes, dtype=int)  # node wealth
         # distribute starting wealth
         for _ in range(n_edges - n_nodes + 1):
-            self.money[random.choice(self.nodes)] = 1
+            self.money[random.choice(self.nodes)] += 1
         # make random donations to set the starting game state
         for _ in range(n_edges):
             self.make_donation(random.choice(self.nodes))
