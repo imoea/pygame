@@ -27,7 +27,8 @@ BLUE = (0, 0, 255)
 
 class Game():
     """ game class """
-    __slots__ = ('graph', 'focus', 'money', 'moves', 'nodes', 'pos') 
+    __slots__ = ('graph', 'focus', 'money', 'moves', 'nodes', 'pos',
+                 'prev_state', 'curr_state') 
 
     def __init__(self, height, width, graph, *args):
         """ initialise the game state """
@@ -58,6 +59,9 @@ class Game():
         # make random donations to set the starting game state
         for _ in range(n_edges):
             self.make_donation(random.choice(self.nodes))
+
+        self.prev_state = 0
+        self.curr_state = 2
 
 
     def set_difficulty(self, donations):
@@ -99,17 +103,28 @@ class Game():
             text = Text(self.money[node], self.pos[node], WHITE)
             console.blit(text.surface, text)
 
+        # highlight nodes adjacent to the node in focus
+        if self.focus is not None:
+            node = self.focus
+            pygame.draw.circle(console, WHITE, self.pos[node], RADIUS, 3)
+            for nbr in self.graph.neighbors(node):
+                pygame.draw.circle(console, GREEN, self.pos[nbr], RADIUS, 3)
+
 
     def update(self, event):
         """ update the game state """
         for node, pos in enumerate(self.pos):
             if sum((pos - np.array(event.mousexy))**2) < RADIUS2:
+                self.prev_state = self.curr_state
+                self.curr_state = 2 if self.focus != node else 1
                 self.focus = node
                 if event.mousebutton == 1:
                     self.make_donation(node, move=1)
+                    self.curr_state = 2
                 break
         else:
             self.focus = None
+            self.prev_state, self.curr_state = self.curr_state, 0
 
 
 class Text(pygame.Rect):
@@ -181,9 +196,11 @@ class Engine():
 
     def render(self):
         """ render the game state """
-        self.console.fill(BLACK)
-        self.game.render(self.console)
-        pygame.display.update()
+        if engine.game.curr_state != engine.game.prev_state or\
+                engine.game.curr_state == 2:
+            self.console.fill(BLACK)
+            self.game.render(self.console)
+            pygame.display.update()
 
 
 graph = dict(PETERSEN=nx.petersen_graph,
@@ -199,7 +216,7 @@ def get_graph_params(args):
     elif args.name == 'COMPLETE':
         params = [6 if args.n is None else args.n]
     elif args.name == 'STROGATZ':
-        params = [5 if args.n is None else args.n, args.e, args.p]
+        params = [10 if args.n is None else args.n, args.e, args.p]
     elif args.name == 'BARABASI':
         params = [10 if args.n is None else args.n, args.e]
 
@@ -215,13 +232,17 @@ if __name__ == '__main__':
                                 STROGATZ(n, e, p),
                                 BARABASI(n, e)""")
     parser.add_argument('-n', default=None, type=int,
-                        help='number of nodes')
+                        help='number of nodes (2 <= n <= 30)')
     parser.add_argument('-e', default=2, type=int,
-                        help='number of edges per node')
+                        help='number of edges per node (2 <= e <= 5)')
     parser.add_argument('-p', default=0.5, type=float,
-                        help='probability of rewiring')
+                        help='probability of rewiring (0 <= p <= 1)')
     parser.add_argument('-d', default=0, type=int,
-                        help='difficulty')
+                        help='difficulty (d >= 0)')
+    parser.add_argument('-res', default='800x600',
+                        help='resolution; default=800x600')
+    parser.add_argument('-size', default=30, type=int,
+                        help='node size; default=30')
     args = parser.parse_args()
 
     if args.name not in graph:
@@ -241,6 +262,10 @@ if __name__ == '__main__':
     """
     print(instructions)
 
+    # set window, node and font sizes
+    WIN_WIDTH, WIN_HEIGHT = map(int, args.res.split('x'))
+    FONT_SIZE = RADIUS = args.size
+
     engine = Engine()
     # start a new game
     engine.init(*get_graph_params(args))
@@ -253,6 +278,7 @@ if __name__ == '__main__':
         if engine.game.get_win():
             # start a new game with a new graph
             args.name = random.choice(list(graph))
+            args.d += 1  # increase difficulty(?)
             engine.init(*get_graph_params(args))
             engine.game.set_difficulty(args.d)
 
