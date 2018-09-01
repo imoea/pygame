@@ -59,19 +59,19 @@ class Gui(object):
         self.mousexy = events.mousexy
         self.mousebutton = events.mousebutton
 
-    def render(self, console):
         if self.mousebutton == 4:
             self.r = min(self.r + 1, 50)
         if self.mousebutton == 5:
             self.r = max(self.r - 1, 1)
 
+    def render(self, console):
         pygame.draw.circle(console, WHITE, self.mousexy, self.r)
 
         for text in self.texts:
             console.blit(text.surface, text)
 
 
-class EventHandler(object):
+class EventHandler():
     """ event handling class """
     __slots__ = ('mousexy', 'mousebutton')
     
@@ -83,12 +83,15 @@ class EventHandler(object):
         self.reset_events()
         event = pygame.event.wait()
 
-        if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
+        if event.type == QUIT or \
+                (event.type == KEYUP and event.key == K_ESCAPE):
             pygame.quit()
             sys.exit()
+
         elif event.type == MOUSEBUTTONUP:
             self.mousexy = event.pos
             self.mousebutton = event.button
+
         elif event.type == MOUSEMOTION:
             self.mousexy = event.pos
 
