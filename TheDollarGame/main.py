@@ -219,6 +219,19 @@ if __name__ == '__main__':
         print('Graph `{}` not found.'.format(args.name))
         exit()
 
+    instructions = """
+    THE DOLLAR GAME
+    ===============
+
+    Each graph represents a social network.
+    The value of each node shows the amount of money each person has.
+    Positive values represent wealth while negative ones represent poverty.
+    The aim of this game is to get everyone out of poverty.
+    When clicking a person, s/he donates $1 to each friend.
+    Help get everyone out of poverty!
+    """
+    print(instructions)
+
     engine = Engine()
     # start a new game
     engine.init(*get_graph_params(args))
