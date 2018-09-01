@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+""" the Dollar Game by Joshua Wong """
 
 from argparse import ArgumentParser
 from pygame.locals import *
@@ -128,6 +129,7 @@ class EventHandler():
 
 
     def get_events(self):
+        """ get mouse and key events """
         self.reset_events()
         event = pygame.event.wait()
 
@@ -160,18 +162,20 @@ class Engine():
 
 
     def init(self, graph, *args):
-        """ initialises a new game """
+        """ initialise a new game """
         self.game = Game(WIN_HEIGHT - 2*BORDER,
                          WIN_WIDTH - 2*BORDER,
                          graph, *args)
 
 
     def update(self):
+        """ update the game state """
         self.event_handler.get_events()
         self.game.update(self.event_handler)
 
 
     def render(self):
+        """ render the game state """
         self.console.fill(BLACK)
         self.game.render(self.console)
         pygame.display.update()
