@@ -60,6 +60,11 @@ class Game():
         for _ in range(n_edges):
             self.make_donation(random.choice(self.nodes))
 
+        # since rendering slows down when there are too many nodes,
+        # only render when the state changes
+        # 0 = not focusing on any node
+        # 1 = focusing on the same node
+        # 2 = changing focus or starting a new game
         self.prev_state = 0
         self.curr_state = 2
 
@@ -196,6 +201,7 @@ class Engine():
 
     def render(self):
         """ render the game state """
+        # only render when it is a state change
         if engine.game.curr_state != engine.game.prev_state or\
                 engine.game.curr_state == 2:
             self.console.fill(BLACK)
