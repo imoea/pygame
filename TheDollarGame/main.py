@@ -115,6 +115,10 @@ class Game():
             for nbr in self.graph.neighbors(node):
                 pygame.draw.circle(console, GREEN, self.pos[nbr], RADIUS, 3)
 
+        # render number of moves
+        text = Text(self.moves, (WIN_WIDTH - BORDER, BORDER), WHITE)
+        console.blit(text.surface, text)
+
 
     def update(self, event):
         """ update the game state """
